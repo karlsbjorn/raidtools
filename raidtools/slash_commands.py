@@ -1,5 +1,5 @@
 import discord
-from discord import app_commands
+from redbot.core import app_commands
 
 from raidtools.event_create import EventCreateView
 from raidtools.event_manage import EventManageView

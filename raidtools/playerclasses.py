@@ -27,7 +27,7 @@ player_specs = {
     "monk": {"brewmaster", "mistweaver", "windwalker"},
     "demon_hunter": {"havoc", "vengeance"},
     "death_knight": {"blood", "frost", "unholy"},
-    "evoker": {"preservation", "devastation"},
+    "evoker": {"preservation", "devastation", "augmentation"},
 }
 
 spec_roles = {

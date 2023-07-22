@@ -52,6 +52,7 @@ spec_emojis = {  # TODO: this has to be gotten from config before cog is public
     "death_knight_unholy": "<:unholy:1029810709124612209>",
     "evoker_preservation": "<:preservation:1029819634565783552>",
     "evoker_devastation": "<:devastation:1029819635811495976>",
+    "evoker_augmentation": "<:augmentation:1132116257894846505>",
 }
 button_emojis = {  # TODO: this has to be gotten from config before cog is public
     "bench": "<:bench:1029310572031901727>",

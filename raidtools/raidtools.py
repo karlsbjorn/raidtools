@@ -55,10 +55,10 @@ class RaidTools(SlashCommands, commands.Cog):
                 try:
                     event_date = int(event_data.get("event_date", None)[3:-3])
                 except ValueError:
-                    log.warning(f"Event {event_id} has no valid event_date. Skipping.")
+                    log.debug(f"Event {event_id} has no valid event_date. Skipping.")
                     continue
                 except TypeError:
-                    log.warning(f"Event {event_id} has no event_date. Skipping.")
+                    log.debug(f"Event {event_id} has no event_date. Skipping.")
                     continue
                 if not event_date or len(str(event_date)) < 6:
                     continue
@@ -66,7 +66,7 @@ class RaidTools(SlashCommands, commands.Cog):
                 try:
                     event_date = datetime.fromtimestamp(event_date, tz=timezone.utc)
                 except OverflowError:
-                    log.warning(f"Event {event_id} has no valid event_date. Skipping.")
+                    log.debug(f"Event {event_id} has no valid event_date. Skipping.")
                     continue
 
                 now = discord.utils.utcnow()
@@ -75,11 +75,11 @@ class RaidTools(SlashCommands, commands.Cog):
                     # Event has started
                     guild = self.bot.get_guild(event_data["event_guild"])
                     if not guild:
-                        log.warning(f"Guild {event_data['event_guild']} not found.")
+                        log.debug(f"Guild {event_data['event_guild']} not found.")
                         continue
                     channel = guild.get_channel(event_data["event_channel"])
                     if not channel:
-                        log.warning(
+                        log.debug(
                             f"Channel {event_data['event_channel']} in guild {guild.id} not found."
                         )
                         continue
@@ -87,23 +87,23 @@ class RaidTools(SlashCommands, commands.Cog):
                         message = await channel.fetch_message(event_data["event_id"])
                     except discord.NotFound:
                         # TODO: Remove event from config
-                        log.warning(
+                        log.debug(
                             f"Message {event_data['event_id']} in channel {channel.id} not found."
                         )
                         continue
                     except discord.Forbidden:
-                        log.warning(
+                        log.debug(
                             f"No permission to fetch message {event_data['event_id']} in channel {channel.id}."
                         )
                         continue
                     except discord.HTTPException:
-                        log.warning(
+                        log.debug(
                             f"Error fetching message {event_data['event_id']} in channel {channel.id}.",
                             exc_info=True,
                         )
                         continue
                     if not message:
-                        log.warning(
+                        log.debug(
                             f"Message {event_data['event_id']} in channel {channel.id} not found."
                         )
                         continue

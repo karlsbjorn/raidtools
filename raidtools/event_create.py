@@ -665,6 +665,11 @@ class EventWithOffspecView(discord.ui.View):
                 f"{interaction.user.mention} Prvo se moraš prijaviti za glavni spec.",
                 ephemeral=True,
             )
+        elif user_events[event_id]["participating_role"] == "tank":
+            await interaction.response.send_message(
+                "Ne možeš bit tank offspec ako ti je tank već main spec",
+                ephemeral=True,
+            )
         else:
             # Add user to the offspec role
             if user_participating_role:
@@ -705,6 +710,11 @@ class EventWithOffspecView(discord.ui.View):
         elif not user_this_event.get("participating_class", None):
             await interaction.response.send_message(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
+            )
+        elif user_events[event_id]["participating_role"] == "healer":
+            await interaction.response.send_message(
+                "Ne možeš bit heal offspec ako ti je heal već main spec",
+                ephemeral=True,
             )
         else:
             # Add user to the offspec role
@@ -747,6 +757,11 @@ class EventWithOffspecView(discord.ui.View):
             await interaction.response.send_message(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
             )
+        elif user_events[event_id]["participating_role"] == "dps":
+            await interaction.response.send_message(
+                "Ne možeš bit dps offspec ako ti je dps već main spec",
+                ephemeral=True,
+            )
         else:
             # Add user to the offspec role
             if user_participating_role:
@@ -787,6 +802,11 @@ class EventWithOffspecView(discord.ui.View):
         elif not user_this_event.get("participating_class", None):
             await interaction.response.send_message(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
+            )
+        elif user_events[event_id]["participating_role"] == "dps":
+            await interaction.response.send_message(
+                "Ne možeš bit dps offspec ako ti je dps već main spec",
+                ephemeral=True,
             )
         else:
             # Add user to the offspec role

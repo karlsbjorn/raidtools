@@ -674,10 +674,14 @@ class EventWithOffspecView(discord.ui.View):
             )
         else:
             # Add user to the offspec role
-            if user_participating_role:
-                current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
-                    interaction.user.id
-                )
+            try:
+                if user_participating_role:
+                    current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
+                        interaction.user.id
+                    )
+            except ValueError:
+                # Removed through other means? Not there? Who knows
+                pass
             current_events[event_id]["signed_up"]["offspec_tank"] += [interaction.user.id]
             user_events[event_id]["offspec_role"] = "offspec_tank"
             await self.update_event(current_events, event_id, interaction, user_events)
@@ -722,10 +726,14 @@ class EventWithOffspecView(discord.ui.View):
             )
         else:
             # Add user to the offspec role
-            if user_participating_role:
-                current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
-                    interaction.user.id
-                )
+            try:
+                if user_participating_role:
+                    current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
+                        interaction.user.id
+                    )
+            except ValueError:
+                # Removed through other means? Not there? Who knows
+                pass
             current_events[event_id]["signed_up"]["offspec_healer"] += [interaction.user.id]
             user_events[event_id]["offspec_role"] = "offspec_healer"
             await self.update_event(current_events, event_id, interaction, user_events)
@@ -770,10 +778,14 @@ class EventWithOffspecView(discord.ui.View):
             )
         else:
             # Add user to the offspec role
-            if user_participating_role:
-                current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
-                    interaction.user.id
-                )
+            try:
+                if user_participating_role:
+                    current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
+                        interaction.user.id
+                    )
+            except ValueError:
+                # Removed through other means? Not there? Who knows
+                pass
             current_events[event_id]["signed_up"]["offspec_dps"] += [interaction.user.id]
             user_events[event_id]["offspec_role"] = "offspec_dps"
             await self.update_event(current_events, event_id, interaction, user_events)
@@ -818,10 +830,14 @@ class EventWithOffspecView(discord.ui.View):
             )
         else:
             # Add user to the offspec role
-            if user_participating_role:
-                current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
-                    interaction.user.id
-                )
+            try:
+                if user_participating_role:
+                    current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
+                        interaction.user.id
+                    )
+            except ValueError:
+                # Removed through other means? Not there? Who knows
+                pass
             current_events[event_id]["signed_up"]["offspec_rdps"] += [interaction.user.id]
             user_events[event_id]["offspec_role"] = "offspec_rdps"
             await self.update_event(current_events, event_id, interaction, user_events)

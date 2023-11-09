@@ -44,6 +44,8 @@ class RaidtoolsDiscordEvent:
                 start_time=self.event_start,
                 end_time=self.event_end,
                 location="WoW Dragonflight",
+                entity_type=discord.EntityType.external,
+                privacy_level=discord.PrivacyLevel.guild_only,
             )
         except ValueError:
             return None

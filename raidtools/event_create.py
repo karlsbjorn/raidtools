@@ -77,7 +77,7 @@ class EventCreateModal(discord.ui.Modal):
             mock_signed_up["late"] = [interaction.user.id]
             mock_signed_up["tentative"] = [interaction.user.id]
             mock_signed_up["absent"] = [interaction.user.id]
-        elif self.extra_buttons == "offspec_buttons":
+        elif "offspec" in self.extra_buttons:
             mock_signed_up["offspec_tank"] = [interaction.user.id]
             mock_signed_up["offspec_healer"] = [interaction.user.id]
             mock_signed_up["offspec_dps"] = [interaction.user.id]
@@ -106,6 +106,10 @@ class EventCreateModal(discord.ui.Modal):
             view = EventPreviewWithButtonsView(extras=extras, config=self.config)
         elif self.extra_buttons == "offspec_buttons":
             view = EventPreviewWithOffspecButtonsView(extras=extras, config=self.config)
+        elif self.extra_buttons == "offspec_buttons_multi":
+            view = EventPreviewWithOffspecButtonsView(
+                extras=extras, config=self.config, multi=True
+            )
 
         await interaction.response.send_message(
             content="Event će ovako izgledati:",
@@ -314,10 +318,11 @@ class EventPreviewWithButtonsView(discord.ui.View):
 
 
 class EventPreviewWithOffspecButtonsView(discord.ui.View):
-    def __init__(self, extras: Dict[str, Optional[str]], config):
+    def __init__(self, extras: Dict[str, Optional[str]], config, multi=False):
         self.config = config
         super().__init__()
         self.extras = extras
+        self.multi = multi
         self.add_item(EventClassDropdown(self.config, disabled=True))
 
     @discord.ui.button(
@@ -407,7 +412,10 @@ class EventPreviewWithOffspecButtonsView(discord.ui.View):
 
         # Send event message
         msg = await interaction.client.get_channel(channel_id).send(
-            embed=embed, view=EventWithOffspecView(self.config)
+            embed=embed,
+            view=EventWithOffspecView(self.config)
+            if not self.multi
+            else EventWithMultiOffspecView(self.config),
         )
 
         # Create a thread
@@ -854,6 +862,181 @@ class EventWithOffspecView(discord.ui.View):
             config=self.config,
         )
         await interaction.response.edit_message(embed=embed, view=self)
+
+
+class EventWithMultiOffspecView(EventWithOffspecView):
+    @discord.ui.button(
+        style=discord.ButtonStyle.blurple,
+        row=1,
+        emoji=role_emojis["tank"],
+        custom_id="raidtools:eventbutton:tank_multi",
+    )
+    async def tank(self, interaction: discord.Interaction, button: discord.ui.Button):
+        log.debug(f"Tank button pressed by {interaction.user.name}")
+        current_events = await self.config.guild(interaction.guild).events()
+        event_id = str(interaction.message.id)
+
+        user_events: Dict = await self.config.member(interaction.user).events()
+        if event_id not in user_events:
+            user_events[event_id] = {
+                "participating_role": None,
+                "participating_class": None,
+                "participating_spec": None,
+                "offspec_role": None,
+            }
+
+        user_this_event: Dict = user_events.get(event_id, {})
+
+        tank_offspec_members = current_events[event_id]["signed_up"]["offspec_tank"]
+        if interaction.user.id in tank_offspec_members:
+            current_events[event_id]["signed_up"]["offspec_tank"].remove(interaction.user.id)
+            user_events[event_id]["offspec_role"] = None
+            await self.update_event(current_events, event_id, interaction, user_events)
+        elif not user_this_event.get("participating_class", None):
+            await interaction.response.send_message(
+                f"{interaction.user.mention} Prvo se moraš prijaviti za glavni spec.",
+                ephemeral=True,
+            )
+        elif user_events[event_id]["participating_role"] == "tank":
+            await interaction.response.send_message(
+                "Ne možeš bit tank offspec ako ti je tank već main spec",
+                ephemeral=True,
+            )
+        else:
+            # Add user to the offspec role
+            current_events[event_id]["signed_up"]["offspec_tank"] += [interaction.user.id]
+            user_events[event_id]["offspec_role"] = "offspec_tank"
+            await self.update_event(current_events, event_id, interaction, user_events)
+        return
+
+    @discord.ui.button(
+        style=discord.ButtonStyle.green,
+        row=1,
+        emoji=role_emojis["heal"],
+        custom_id="raidtools:eventbutton:healer_multi",
+    )
+    async def healer(self, interaction: discord.Interaction, button: discord.ui.Button):
+        log.debug(f"Healer button pressed by {interaction.user.name}")
+        current_events = await self.config.guild(interaction.guild).events()
+        event_id = str(interaction.message.id)
+
+        user_events: Dict = await self.config.member(interaction.user).events()
+        if event_id not in user_events:
+            user_events[event_id] = {
+                "participating_role": None,
+                "participating_class": None,
+                "participating_spec": None,
+                "offspec_role": None,
+            }
+
+        user_this_event: Dict = user_events.get(event_id, {})
+
+        heal_offspec_members = current_events[event_id]["signed_up"]["offspec_healer"]
+        if interaction.user.id in heal_offspec_members:
+            current_events[event_id]["signed_up"]["offspec_healer"].remove(interaction.user.id)
+            user_events[event_id]["offspec_role"] = None
+            await self.update_event(current_events, event_id, interaction, user_events)
+        elif not user_this_event.get("participating_class", None):
+            await interaction.response.send_message(
+                "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
+            )
+        elif user_events[event_id]["participating_role"] == "healer":
+            await interaction.response.send_message(
+                "Ne možeš bit heal offspec ako ti je heal već main spec",
+                ephemeral=True,
+            )
+        else:
+            # Add user to the offspec role
+            current_events[event_id]["signed_up"]["offspec_healer"] += [interaction.user.id]
+            user_events[event_id]["offspec_role"] = "offspec_healer"
+            await self.update_event(current_events, event_id, interaction, user_events)
+        return
+
+    @discord.ui.button(
+        style=discord.ButtonStyle.red,
+        row=1,
+        emoji=button_emojis["dps"],
+        custom_id="raidtools:eventbutton:dps_multi",
+    )
+    async def dps(self, interaction: discord.Interaction, button: discord.ui.Button):
+        log.debug(f"DPS button pressed by {interaction.user.name}")
+        current_events = await self.config.guild(interaction.guild).events()
+        event_id = str(interaction.message.id)
+
+        user_events: Dict = await self.config.member(interaction.user).events()
+        if event_id not in user_events:
+            user_events[event_id] = {
+                "participating_role": None,
+                "participating_class": None,
+                "participating_spec": None,
+                "offspec_role": None,
+            }
+
+        user_this_event: Dict = user_events.get(event_id, {})
+
+        dps_offspec_members = current_events[event_id]["signed_up"]["offspec_dps"]
+        if interaction.user.id in dps_offspec_members:
+            current_events[event_id]["signed_up"]["offspec_dps"].remove(interaction.user.id)
+            user_events[event_id]["offspec_role"] = None
+            await self.update_event(current_events, event_id, interaction, user_events)
+        elif not user_this_event.get("participating_class", None):
+            await interaction.response.send_message(
+                "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
+            )
+        elif user_events[event_id]["participating_role"] == "dps":
+            await interaction.response.send_message(
+                "Ne možeš bit dps offspec ako ti je dps već main spec",
+                ephemeral=True,
+            )
+        else:
+            # Add user to the offspec role
+            current_events[event_id]["signed_up"]["offspec_dps"] += [interaction.user.id]
+            user_events[event_id]["offspec_role"] = "offspec_dps"
+            await self.update_event(current_events, event_id, interaction, user_events)
+        return
+
+    @discord.ui.button(
+        style=discord.ButtonStyle.red,
+        row=1,
+        emoji=button_emojis["rdps"],
+        custom_id="raidtools:eventbutton:rdps_multi",
+    )
+    async def ranged_dps(self, interaction: discord.Interaction, button: discord.ui.Button):
+        log.debug(f"Ranged DPS button pressed by {interaction.user.name}")
+        current_events = await self.config.guild(interaction.guild).events()
+        event_id = str(interaction.message.id)
+
+        user_events: Dict = await self.config.member(interaction.user).events()
+        if event_id not in user_events:
+            user_events[event_id] = {
+                "participating_role": None,
+                "participating_class": None,
+                "participating_spec": None,
+                "offspec_role": None,
+            }
+
+        user_this_event: Dict = user_events.get(event_id, {})
+
+        rdps_offspec_members = current_events[event_id]["signed_up"]["offspec_rdps"]
+        if interaction.user.id in rdps_offspec_members:
+            current_events[event_id]["signed_up"]["offspec_dps"].remove(interaction.user.id)
+            user_events[event_id]["offspec_role"] = None
+            await self.update_event(current_events, event_id, interaction, user_events)
+        elif not user_this_event.get("participating_class", None):
+            await interaction.response.send_message(
+                "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
+            )
+        elif user_events[event_id]["participating_role"] == "dps":
+            await interaction.response.send_message(
+                "Ne možeš bit dps offspec ako ti je dps već main spec",
+                ephemeral=True,
+            )
+        else:
+            # Add user to the offspec role
+            current_events[event_id]["signed_up"]["offspec_rdps"] += [interaction.user.id]
+            user_events[event_id]["offspec_role"] = "offspec_rdps"
+            await self.update_event(current_events, event_id, interaction, user_events)
+        return
 
 
 class EventClassDropdown(discord.ui.Select):

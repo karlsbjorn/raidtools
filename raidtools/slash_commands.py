@@ -14,7 +14,8 @@ class SlashCommands:
         choices=[
             app_commands.Choice(name="Samo klasa/spec", value="no_buttons"),
             app_commands.Choice(name="Klasa/spec + nedolasci", value="buttons"),
-            app_commands.Choice(name="Klasa/spec + offspec uloga", value="offspec_buttons"),
+            app_commands.Choice(name="Klasa/spec + jedan offspec", value="offspec_buttons"),
+            app_commands.Choice(name="Klasa/spec + više offspeca", value="offspec_buttons_multi")
         ]
     )
     @app_commands.guild_only()

@@ -1019,7 +1019,7 @@ class EventWithMultiOffspecView(EventWithOffspecView):
 
         rdps_offspec_members = current_events[event_id]["signed_up"]["offspec_rdps"]
         if interaction.user.id in rdps_offspec_members:
-            current_events[event_id]["signed_up"]["offspec_dps"].remove(interaction.user.id)
+            current_events[event_id]["signed_up"]["offspec_rdps"].remove(interaction.user.id)
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):

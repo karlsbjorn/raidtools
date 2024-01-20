@@ -43,3 +43,35 @@ class DeleteConfirmationView(discord.ui.View):
         for child in self.children:
             child.disabled = True
         await interaction.response.edit_message(view=self)
+
+
+class CloseConfirmationView(discord.ui.View):
+    def __init__(self, config, event_id):
+        self.config = config
+        self.event_id = event_id
+        super().__init__()
+
+    @discord.ui.button(label="Da", style=discord.ButtonStyle.danger)
+    async def confirmed_close_event(
+        self, interaction: discord.Interaction, button: discord.ui.Button, /
+    ) -> None:
+        events: Dict = await self.config.guild(interaction.guild).events()
+        event_channel = interaction.guild.get_channel_or_thread(
+            events[self.event_id]["event_channel"]
+        )
+
+        # Remove event view
+        event_message = await event_channel.fetch_message(self.event_id)
+        await event_message.edit(view=None)
+
+        for child in self.children:
+            child.disabled = True
+        await interaction.response.edit_message(content="Prijave zatvorene.", view=self)
+
+    @discord.ui.button(label="Ne", style=discord.ButtonStyle.success)
+    async def cancel_delete_event(
+        self, interaction: discord.Interaction, button: discord.ui.Button, /
+    ) -> None:
+        for child in self.children:
+            child.disabled = True
+        await interaction.response.edit_message(view=self)

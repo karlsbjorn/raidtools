@@ -6,7 +6,7 @@ import discord.ui
 from openpyxl.styles import PatternFill
 from openpyxl.workbook import Workbook
 
-from raidtools.confirmation import DeleteConfirmationView
+from raidtools.confirmation import DeleteConfirmationView, CloseConfirmationView
 from raidtools.discordevent import RaidtoolsDiscordEvent
 from raidtools.shared import EventEmbed
 
@@ -59,6 +59,16 @@ class EventEditView(discord.ui.View):
         self.config = config
         super().__init__()
         self.add_item(EventEditDropdown(event_id=event_id, config=config, preview_msg=preview_msg))
+
+    @discord.ui.button(label="Zatvori prijave", style=discord.ButtonStyle.danger, row=1)
+    async def close_event_signups(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        await interaction.response.send_message(
+            "Jesi siguran?",
+            ephemeral=True,
+            view=CloseConfirmationView(self.config, self.event_id),
+        )
 
     @discord.ui.button(label="Izbriši event", style=discord.ButtonStyle.danger, row=1)
     async def delete_event(
@@ -124,34 +134,23 @@ class EventEditView(discord.ui.View):
 
     @staticmethod
     def get_class_color(player_class: str) -> str:
-        if player_class == "Warrior":
-            return "C69B6D"
-        elif player_class == "Rogue":
-            return "FFF468"
-        elif player_class == "Mage":
-            return "69CCF0"
-        elif player_class == "Priest":
-            return "FFFFFF"
-        elif player_class == "Druid":
-            return "FF7D0A"
-        elif player_class == "Hunter":
-            return "ABD473"
-        elif player_class == "Shaman":
-            return "0070DD"
-        elif player_class == "Warlock":
-            return "8788EE"
-        elif player_class == "Paladin":
-            return "F48CBA"
-        elif player_class == "Monk":
-            return "00FF98"
-        elif player_class == "Death Knight":
-            return "C41E3A"
-        elif player_class == "Demon Hunter":
-            return "A330C9"
-        elif player_class == "Evoker":
-            return "33937F"
-        else:
-            return "FFFFFF"
+        class_colors = {
+            "Warrior": "C69B6D",
+            "Rogue": "FFF468",
+            "Mage": "69CCF0",
+            "Priest": "FFFFFF",
+            "Druid": "FF7D0A",
+            "Hunter": "ABD473",
+            "Shaman": "0070DD",
+            "Warlock": "8788EE",
+            "Paladin": "F48CBA",
+            "Monk": "00FF98",
+            "Death Knight": "C41E3A",
+            "Demon Hunter": "A330C9",
+            "Evoker": "33937F",
+        }
+
+        return class_colors.get(player_class, "FFFFFF")
 
 
 class EventEditDropdown(discord.ui.Select):

@@ -166,13 +166,7 @@ class EventPreviewView(discord.ui.View):
             embed=embed, view=EventView(self.config)
         )
 
-        # Create a thread
-        # try:
-        #     await msg.create_thread(name=f"Rasprava - {self.extras['event_name']}")
-        # except discord.Forbidden:
-        #     log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
-        # except discord.HTTPException:
-        #     log.error("Failed to create thread", exc_info=True)
+        thread = await self.create_event_thread(msg)
 
         # Send a Discord scheduled event
         try:
@@ -192,10 +186,22 @@ class EventPreviewView(discord.ui.View):
             "event_description": self.extras["event_description"],
             "event_date": self.extras["event_date"],
             "event_end_date": self.extras["event_end_date"],
+            "event_thread": thread.id if thread else None,
             "signed_up": mock_signed_up,
             "scheduled_event_id": scheduled_event.id if scheduled_event else None,
         }
         await self.config.guild(msg.guild).events.set(current_events)
+
+    async def create_event_thread(self, msg: discord.Message) -> Optional[discord.Thread]:
+        try:
+            thread = await msg.create_thread(name=f"{self.extras['event_name']}")
+        except discord.Forbidden:
+            log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
+            return
+        except discord.HTTPException:
+            log.error("Failed to create thread", exc_info=True)
+            return
+        return thread
 
 
 class EventPreviewWithButtonsView(discord.ui.View):
@@ -285,13 +291,7 @@ class EventPreviewWithButtonsView(discord.ui.View):
             embed=embed, view=EventWithButtonsView(self.config)
         )
 
-        # Create a thread
-        # try:
-        #     await msg.create_thread(name=f"Rasprava - {self.extras['event_name']}")
-        # except discord.Forbidden:
-        #     log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
-        # except discord.HTTPException:
-        #     log.error("Failed to create thread", exc_info=True)
+        thread = await self.create_event_thread(msg)
 
         # Send a Discord scheduled event
         try:
@@ -311,10 +311,22 @@ class EventPreviewWithButtonsView(discord.ui.View):
             "event_description": self.extras["event_description"],
             "event_date": self.extras["event_date"],
             "event_end_date": self.extras["event_end_date"],
+            "event_thread": thread.id if thread else None,
             "signed_up": mock_signed_up,
             "scheduled_event_id": scheduled_event.id if scheduled_event else None,
         }
         await self.config.guild(msg.guild).events.set(current_events)
+
+    async def create_event_thread(self, msg: discord.Message) -> Optional[discord.Thread]:
+        try:
+            thread = await msg.create_thread(name=f"{self.extras['event_name']}")
+        except discord.Forbidden:
+            log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
+            return
+        except discord.HTTPException:
+            log.error("Failed to create thread", exc_info=True)
+            return
+        return thread
 
 
 class EventPreviewWithOffspecButtonsView(discord.ui.View):
@@ -418,13 +430,7 @@ class EventPreviewWithOffspecButtonsView(discord.ui.View):
             else EventWithMultiOffspecView(self.config),
         )
 
-        # Create a thread
-        # try:
-        #     await msg.create_thread(name=f"Rasprava - {self.extras['event_name']}")
-        # except discord.Forbidden:
-        #     log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
-        # except discord.HTTPException:
-        #     log.error("Failed to create thread", exc_info=True)
+        thread = await self.create_event_thread(msg)
 
         # Send a Discord scheduled event
         try:
@@ -444,10 +450,22 @@ class EventPreviewWithOffspecButtonsView(discord.ui.View):
             "event_description": self.extras["event_description"],
             "event_date": self.extras["event_date"],
             "event_end_date": self.extras["event_end_date"],
+            "event_thread": thread.id if thread else None,
             "signed_up": mock_signed_up,
             "scheduled_event_id": scheduled_event.id if scheduled_event else None,
         }
         await self.config.guild(msg.guild).events.set(current_events)
+
+    async def create_event_thread(self, msg: discord.Message) -> Optional[discord.Thread]:
+        try:
+            thread = await msg.create_thread(name=f"{self.extras['event_name']}")
+        except discord.Forbidden:
+            log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
+            return
+        except discord.HTTPException:
+            log.error("Failed to create thread", exc_info=True)
+            return
+        return thread
 
 
 class EventView(discord.ui.View):

@@ -1181,5 +1181,5 @@ class EventSpecDropdown(discord.ui.Select):
         if not thread_id:
             return
         thread = guild.get_thread(thread_id)
-        if thread:
+        if thread and not thread.locked:
             await thread.add_user(user)

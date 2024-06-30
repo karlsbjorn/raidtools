@@ -2,6 +2,7 @@ import logging
 from typing import Dict, Optional
 
 import discord.ui
+from redbot.core.bot import Red
 
 from raidtools.discordevent import RaidtoolsDiscordEvent
 from raidtools.emojis import button_emojis, class_emojis, role_emojis, spec_emojis
@@ -1154,6 +1155,11 @@ class EventSpecDropdown(discord.ui.Select):
             user_events[self.event_id]["participating_role"] = "dps"
 
         await self.update_event(current_events, self.event_id, interaction, user_events)
+        await self.add_participant_to_thread(
+            current_events[self.event_id].get("event_thread"),
+            interaction.user,
+            interaction.guild,
+        )
 
     async def update_event(self, current_events, event_id, interaction, user_events):
         log.debug(f"Updating event {event_id} for {interaction.user.name}")
@@ -1168,3 +1174,12 @@ class EventSpecDropdown(discord.ui.Select):
         event_msg = await interaction.channel.fetch_message(int(event_id))
         await event_msg.edit(embed=embed)
         await interaction.response.send_message("Uspješno si se prijavio.", ephemeral=True)
+
+    async def add_participant_to_thread(
+        self, thread_id: int, user: discord.User, guild: discord.Guild
+    ):
+        if not thread_id:
+            return
+        thread = guild.get_thread(thread_id)
+        if thread:
+            await thread.add_user(user)

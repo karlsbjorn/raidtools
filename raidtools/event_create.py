@@ -426,9 +426,11 @@ class EventPreviewWithOffspecButtonsView(discord.ui.View):
         # Send event message
         msg = await interaction.client.get_channel(channel_id).send(
             embed=embed,
-            view=EventWithOffspecView(self.config)
-            if not self.multi
-            else EventWithMultiOffspecView(self.config),
+            view=(
+                EventWithOffspecView(self.config)
+                if not self.multi
+                else EventWithMultiOffspecView(self.config)
+            ),
         )
 
         thread = await self.create_event_thread(msg)
@@ -1173,7 +1175,11 @@ class EventSpecDropdown(discord.ui.Select):
         )
         event_msg = await interaction.channel.fetch_message(int(event_id))
         await event_msg.edit(embed=embed)
-        await interaction.response.send_message("Uspješno si se prijavio.", ephemeral=True)
+        try:
+            await interaction.response.send_message("Uspješno si se prijavio.", ephemeral=True)
+        except discord.NotFound:
+            # Can't respond to interaction because user deleted the ephemeral message it was invoked from.
+            pass
 
     async def add_participant_to_thread(
         self, thread_id: int, user: discord.User, guild: discord.Guild

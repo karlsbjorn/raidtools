@@ -117,7 +117,7 @@ class RaidTools(SlashCommands, commands.Cog):
 
                     # Close and lock the thread
                     if thread := guild.get_thread(message.id):
-                        await thread.edit(locked=True, archived=True)
+                        await thread.edit(archived=True)
 
                     # Remove signup ability
                     await message.edit(view=None)

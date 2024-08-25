@@ -461,7 +461,9 @@ class EventPreviewWithOffspecButtonsView(discord.ui.View):
 
     async def create_event_thread(self, msg: discord.Message) -> Optional[discord.Thread]:
         try:
-            thread = await msg.create_thread(name=f"{self.extras['event_name']}")
+            thread = await msg.create_thread(
+                name=f"{self.extras['event_name']}", auto_archive_duration=10080
+            )
         except discord.Forbidden:
             log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
             return

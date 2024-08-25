@@ -1122,7 +1122,7 @@ class EventSpecDropdown(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         log.debug(f"Spec dropdown callback for {interaction.user.name}, picked {self.values}")
         picked_spec = self.values[0]
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
         # Get player's current participation status
         current_events = await self.config.guild(interaction.guild).events()
         user_events = await self.config.member(interaction.user).events()
@@ -1179,7 +1179,7 @@ class EventSpecDropdown(discord.ui.Select):
         event_msg = await interaction.channel.fetch_message(int(event_id))
         await event_msg.edit(embed=embed)
         try:
-            await interaction.followup.send_message("Uspješno si se prijavio.", ephemeral=True)
+            await interaction.followup.send("Uspješno si se prijavio.", ephemeral=True)
         except discord.NotFound:
             # Can't respond to interaction because user deleted the ephemeral message it was invoked from.
             pass

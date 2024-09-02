@@ -48,14 +48,14 @@ class EventCreateModal(discord.ui.Modal):
         self.event_date = discord.ui.TextInput(
             label="Datum eventa",
             style=discord.TextStyle.short,
-            placeholder="<t:1665464280:R> (pročitaj upute)",
+            placeholder="<t:1665464280:R> (kada se prijave zatvore)",
             min_length=1,
             max_length=20,
         )
         self.event_end_date = discord.ui.TextInput(
             label="Datum završetka eventa",
             style=discord.TextStyle.short,
-            placeholder="<t:1823764123:R> (pročitaj upute)",
+            placeholder="<t:1823764123:R> (kada event završava)",
             min_length=1,
             max_length=20,
         )

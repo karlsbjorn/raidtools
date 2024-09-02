@@ -42,7 +42,7 @@ class SlashCommands:
             value="**PROČITAJ ME**\n"
             "Unesi datum kao [vremensku oznaku koju možeš dobit ovdje.]"
             "(https://r.3v.fi/discord-timestamps/)\n"
-            "Klikni gumb nakon što imaš vremensku oznaku kopiranu."
+            "Klikni gumb nakon što imaš vremensku oznaku kopiranu.\n"
             "❗**Prijave se zatvore kad event počne**",
             inline=False,
         )

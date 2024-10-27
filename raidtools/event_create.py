@@ -971,6 +971,16 @@ class EventWithOffspecView(discord.ui.View):
             await interaction.followup.send("Nisi prijavljen.", ephemeral=True)
             return
 
+        user_participating_role: str = user_events[event_id]["offspec_role"]
+        try:
+            if user_participating_role:
+                current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
+                    interaction.user.id
+                )
+        except ValueError:
+            # Removed through other means? Not there? Who knows
+            pass
+
         try:
             user_events.pop(event_id)
         except Exception:
@@ -1192,6 +1202,16 @@ class EventWithMultiOffspecView(EventWithOffspecView):
         except (ValueError, KeyError):
             await interaction.followup.send("Nisi prijavljen.", ephemeral=True)
             return
+
+        user_participating_role: str = user_events[event_id]["offspec_role"]
+        try:
+            if user_participating_role:
+                current_events[event_id]["signed_up"][user_participating_role.lower()].remove(
+                    interaction.user.id
+                )
+        except ValueError:
+            # Removed through other means? Not there? Who knows
+            pass
 
         try:
             user_events.pop(event_id)

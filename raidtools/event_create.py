@@ -718,7 +718,8 @@ class EventWithButtonsView(discord.ui.View):
             bot=interaction.client,
             config=self.config,
         )
-        await interaction.response.edit_message(embed=embed, view=self)
+        event_msg = await interaction.channel.fetch_message(int(event_id))
+        await event_msg.edit(embed=embed)
 
 
 class EventWithOffspecView(discord.ui.View):
@@ -983,7 +984,8 @@ class EventWithOffspecView(discord.ui.View):
             bot=interaction.client,
             config=self.config,
         )
-        await interaction.response.edit_message(embed=embed, view=self)
+        event_msg = await interaction.channel.fetch_message(int(event_id))
+        await event_msg.edit(embed=embed)
 
 
 class EventWithMultiOffspecView(EventWithOffspecView):

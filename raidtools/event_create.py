@@ -494,7 +494,7 @@ class EventView(discord.ui.View):
         try:
             user_class: str = user_events[event_id]["participating_class"]
             current_events[event_id]["signed_up"][user_class].remove(interaction.user.id)
-        except ValueError:
+        except (ValueError, KeyError):
             await interaction.followup.send("Nisi prijavljen.")
             return
 

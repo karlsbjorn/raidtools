@@ -479,6 +479,51 @@ class EventView(discord.ui.View):
         super().__init__(timeout=None)
         self.add_item(EventClassDropdown(self.config))
 
+    @discord.ui.button(
+        label="Odjavi se",
+        style=discord.ButtonStyle.red,
+        row=1,
+        custom_id="raidtools:eventbutton:removesignup",
+    )
+    async def remove_signup(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True)
+        current_events = await self.config.guild(interaction.guild).events()
+        event_id = str(interaction.message.id)  # type: ignore
+        user_events: Dict = await self.config.member(interaction.user).events()
+
+        try:
+            user_class: str = user_events[event_id]["participating_class"]
+            current_events[event_id]["signed_up"][user_class].remove(interaction.user.id)
+        except ValueError:
+            await interaction.followup.send("Nisi prijavljen.")
+            return
+
+        try:
+            user_events.pop(event_id)
+        except Exception:
+            await interaction.followup.send("Greška. O ne")
+            return
+
+        await self.update_event(current_events, event_id, interaction, user_events)
+
+    async def update_event(self, current_events, event_id, interaction, user_events):
+        log.info(f"Updating event {event_id} for {interaction.user.name}")
+        await self.config.guild(interaction.guild).events.set(current_events)
+        await self.config.member(interaction.user).events.set(user_events)
+        embed = await EventEmbed.create_event_embed(
+            signed_up=current_events[event_id]["signed_up"],
+            event_info=current_events[event_id],
+            bot=interaction.client,
+            config=self.config,
+        )
+        event_msg = await interaction.channel.fetch_message(int(event_id))
+        await event_msg.edit(embed=embed)
+        try:
+            await interaction.followup.send("Uspješno si se odjavio.", ephemeral=True)
+        except discord.NotFound:
+            # Can't respond to interaction because user deleted the ephemeral message it was invoked from.
+            pass
+
 
 class EventWithButtonsView(discord.ui.View):
     def __init__(self, config):

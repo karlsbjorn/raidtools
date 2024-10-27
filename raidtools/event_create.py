@@ -769,12 +769,12 @@ class EventWithOffspecView(discord.ui.View):
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"{interaction.user.mention} Prvo se moraš prijaviti za glavni spec.",
                 ephemeral=True,
             )
         elif user_events[event_id]["participating_role"] == "tank":
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Ne možeš bit tank offspec ako ti je tank već main spec",
                 ephemeral=True,
             )
@@ -823,11 +823,11 @@ class EventWithOffspecView(discord.ui.View):
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
             )
         elif user_events[event_id]["participating_role"] == "healer":
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Ne možeš bit heal offspec ako ti je heal već main spec",
                 ephemeral=True,
             )
@@ -876,11 +876,11 @@ class EventWithOffspecView(discord.ui.View):
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
             )
         elif user_events[event_id]["participating_role"] == "dps":
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Ne možeš bit dps offspec ako ti je dps već main spec",
                 ephemeral=True,
             )
@@ -929,11 +929,11 @@ class EventWithOffspecView(discord.ui.View):
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
             )
         elif user_events[event_id]["participating_role"] == "dps":
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Ne možeš bit dps offspec ako ti je dps već main spec",
                 ephemeral=True,
             )
@@ -977,6 +977,7 @@ class EventWithOffspecView(discord.ui.View):
             await interaction.followup.send("Greška. O ne", ephemeral=True)
             return
 
+        await interaction.followup.send("Uspješno si se odjavio.", ephemeral=True)
         await self.update_event(current_events, event_id, interaction, user_events)
 
     async def update_event(
@@ -1025,12 +1026,12 @@ class EventWithMultiOffspecView(EventWithOffspecView):
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"{interaction.user.mention} Prvo se moraš prijaviti za glavni spec.",
                 ephemeral=True,
             )
         elif user_events[event_id]["participating_role"] == "tank":
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Ne možeš bit tank offspec ako ti je tank već main spec",
                 ephemeral=True,
             )
@@ -1070,11 +1071,11 @@ class EventWithMultiOffspecView(EventWithOffspecView):
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
             )
         elif user_events[event_id]["participating_role"] == "healer":
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Ne možeš bit heal offspec ako ti je heal već main spec",
                 ephemeral=True,
             )
@@ -1114,11 +1115,11 @@ class EventWithMultiOffspecView(EventWithOffspecView):
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
             )
         elif user_events[event_id]["participating_role"] == "dps":
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Ne možeš bit dps offspec ako ti je dps već main spec",
                 ephemeral=True,
             )
@@ -1158,11 +1159,11 @@ class EventWithMultiOffspecView(EventWithOffspecView):
             user_events[event_id]["offspec_role"] = None
             await self.update_event(current_events, event_id, interaction, user_events)
         elif not user_this_event.get("participating_class", None):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Prvo se moraš prijaviti za glavni spec.", ephemeral=True
             )
         elif user_events[event_id]["participating_role"] == "dps":
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Ne možeš bit dps offspec ako ti je dps već main spec",
                 ephemeral=True,
             )
@@ -1198,6 +1199,7 @@ class EventWithMultiOffspecView(EventWithOffspecView):
             await interaction.followup.send("Greška. O ne", ephemeral=True)
             return
 
+        await interaction.followup.send("Uspješno si se odjavio.", ephemeral=True)
         await self.update_event(current_events, event_id, interaction, user_events)
 
 

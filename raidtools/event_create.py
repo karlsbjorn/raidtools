@@ -205,129 +205,129 @@ class EventPreviewView(discord.ui.View):
         return thread
 
 
-class EventPreviewWithButtonsView(discord.ui.View):
-    def __init__(self, extras: Dict[str, Optional[str]], config):
-        self.config = config
-        super().__init__()
-        self.extras = extras
-        self.add_item(EventClassDropdown(self.config, disabled=True))
+# class EventPreviewWithButtonsView(discord.ui.View):
+#     def __init__(self, extras: Dict[str, Optional[str]], config):
+#         self.config = config
+#         super().__init__()
+#         self.extras = extras
+#         self.add_item(EventClassDropdown(self.config, disabled=True))
 
-    @discord.ui.button(
-        label="Bench",
-        style=discord.ButtonStyle.grey,
-        disabled=True,
-        row=1,
-        emoji=button_emojis["bench"],
-    )
-    async def bench(self, interaction: discord.Interaction, button: discord.ui.Button):
-        pass
+#     @discord.ui.button(
+#         label="Bench",
+#         style=discord.ButtonStyle.grey,
+#         disabled=True,
+#         row=1,
+#         emoji=button_emojis["bench"],
+#     )
+#     async def bench(self, interaction: discord.Interaction, button: discord.ui.Button):
+#         pass
 
-    @discord.ui.button(
-        label="Kasnim",
-        style=discord.ButtonStyle.grey,
-        disabled=True,
-        row=1,
-        emoji=button_emojis["late"],
-    )
-    async def late(self, interaction: discord.Interaction, button: discord.ui.Button):
-        pass
+#     @discord.ui.button(
+#         label="Kasnim",
+#         style=discord.ButtonStyle.grey,
+#         disabled=True,
+#         row=1,
+#         emoji=button_emojis["late"],
+#     )
+#     async def late(self, interaction: discord.Interaction, button: discord.ui.Button):
+#         pass
 
-    @discord.ui.button(
-        label="Neodlučan",
-        style=discord.ButtonStyle.grey,
-        disabled=True,
-        row=1,
-        emoji=button_emojis["tentative"],
-    )
-    async def tentative(self, interaction: discord.Interaction, button: discord.ui.Button):
-        pass
+#     @discord.ui.button(
+#         label="Neodlučan",
+#         style=discord.ButtonStyle.grey,
+#         disabled=True,
+#         row=1,
+#         emoji=button_emojis["tentative"],
+#     )
+#     async def tentative(self, interaction: discord.Interaction, button: discord.ui.Button):
+#         pass
 
-    @discord.ui.button(
-        label="Odsutan",
-        style=discord.ButtonStyle.grey,
-        disabled=True,
-        row=1,
-        emoji=button_emojis["absent"],
-    )
-    async def no_show(self, interaction: discord.Interaction, button: discord.ui.Button):
-        pass
+#     @discord.ui.button(
+#         label="Odsutan",
+#         style=discord.ButtonStyle.grey,
+#         disabled=True,
+#         row=1,
+#         emoji=button_emojis["absent"],
+#     )
+#     async def no_show(self, interaction: discord.Interaction, button: discord.ui.Button):
+#         pass
 
-    @discord.ui.button(label="Potvrdi event", style=discord.ButtonStyle.green, row=3)
-    async def confirm_event(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.post_event(interaction)
+#     @discord.ui.button(label="Potvrdi event", style=discord.ButtonStyle.green, row=3)
+#     async def confirm_event(self, interaction: discord.Interaction, button: discord.ui.Button):
+#         await self.post_event(interaction)
 
-    async def post_event(self, interaction: discord.Interaction):
-        mock_signed_up = {
-            "warrior": [],
-            "hunter": [],
-            "mage": [],
-            "priest": [],
-            "rogue": [],
-            "druid": [],
-            "paladin": [],
-            "warlock": [],
-            "shaman": [],
-            "monk": [],
-            "demon_hunter": [],
-            "death_knight": [],
-            "evoker": [],
-            "bench": [],
-            "late": [],
-            "tentative": [],
-            "absent": [],
-        }
-        await interaction.response.edit_message(view=None)
+#     async def post_event(self, interaction: discord.Interaction):
+#         mock_signed_up = {
+#             "warrior": [],
+#             "hunter": [],
+#             "mage": [],
+#             "priest": [],
+#             "rogue": [],
+#             "druid": [],
+#             "paladin": [],
+#             "warlock": [],
+#             "shaman": [],
+#             "monk": [],
+#             "demon_hunter": [],
+#             "death_knight": [],
+#             "evoker": [],
+#             "bench": [],
+#             "late": [],
+#             "tentative": [],
+#             "absent": [],
+#         }
+#         await interaction.response.edit_message(view=None)
 
-        embed = await EventEmbed.create_event_embed(
-            signed_up={},
-            event_info=self.extras,
-            bot=interaction.client,
-            config=self.config,
-        )
+#         embed = await EventEmbed.create_event_embed(
+#             signed_up={},
+#             event_info=self.extras,
+#             bot=interaction.client,
+#             config=self.config,
+#         )
 
-        channel_id = interaction.channel_id
+#         channel_id = interaction.channel_id
 
-        # Send event message
-        msg = await interaction.client.get_channel(channel_id).send(
-            embed=embed, view=EventWithButtonsView(self.config)
-        )
+#         # Send event message
+#         msg = await interaction.client.get_channel(channel_id).send(
+#             embed=embed, view=EventWithButtonsView(self.config)
+#         )
 
-        thread = await self.create_event_thread(msg)
+#         thread = await self.create_event_thread(msg)
 
-        # Send a Discord scheduled event
-        try:
-            scheduled_event = RaidtoolsDiscordEvent(msg, interaction, self.extras)
-            scheduled_event = await scheduled_event.add_to_guild()
-        except Exception as e:
-            scheduled_event = None
-            log.error(f"Failed to create scheduled event: {e}", exc_info=True)
+#         # Send a Discord scheduled event
+#         try:
+#             scheduled_event = RaidtoolsDiscordEvent(msg, interaction, self.extras)
+#             scheduled_event = await scheduled_event.add_to_guild()
+#         except Exception as e:
+#             scheduled_event = None
+#             log.error(f"Failed to create scheduled event: {e}", exc_info=True)
 
-        # Add event to config
-        current_events: Dict = await self.config.guild(msg.guild).events()
-        current_events[msg.id] = {
-            "event_id": msg.id,
-            "event_channel": msg.channel.id,
-            "event_guild": msg.guild.id,
-            "event_name": self.extras["event_name"],
-            "event_description": self.extras["event_description"],
-            "event_date": self.extras["event_date"],
-            "event_end_date": self.extras["event_end_date"],
-            "event_thread": thread.id if thread else None,
-            "signed_up": mock_signed_up,
-            "scheduled_event_id": scheduled_event.id if scheduled_event else None,
-        }
-        await self.config.guild(msg.guild).events.set(current_events)
+#         # Add event to config
+#         current_events: Dict = await self.config.guild(msg.guild).events()
+#         current_events[msg.id] = {
+#             "event_id": msg.id,
+#             "event_channel": msg.channel.id,
+#             "event_guild": msg.guild.id,
+#             "event_name": self.extras["event_name"],
+#             "event_description": self.extras["event_description"],
+#             "event_date": self.extras["event_date"],
+#             "event_end_date": self.extras["event_end_date"],
+#             "event_thread": thread.id if thread else None,
+#             "signed_up": mock_signed_up,
+#             "scheduled_event_id": scheduled_event.id if scheduled_event else None,
+#         }
+#         await self.config.guild(msg.guild).events.set(current_events)
 
-    async def create_event_thread(self, msg: discord.Message) -> Optional[discord.Thread]:
-        try:
-            thread = await msg.create_thread(name=f"{self.extras['event_name']}")
-        except discord.Forbidden:
-            log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
-            return
-        except discord.HTTPException:
-            log.error("Failed to create thread", exc_info=True)
-            return
-        return thread
+#     async def create_event_thread(self, msg: discord.Message) -> Optional[discord.Thread]:
+#         try:
+#             thread = await msg.create_thread(name=f"{self.extras['event_name']}")
+#         except discord.Forbidden:
+#             log.debug(f"No permissions to create threads in {msg.channel.id} ({msg.guild})")
+#             return
+#         except discord.HTTPException:
+#             log.error("Failed to create thread", exc_info=True)
+#             return
+#         return thread
 
 
 class EventPreviewWithOffspecButtonsView(discord.ui.View):

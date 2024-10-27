@@ -9,9 +9,9 @@ from redbot.core.i18n import Translator, cog_i18n
 
 from .event_create import (
     EventView,
-    EventWithButtonsView,
-    EventWithOffspecView,
     EventWithMultiOffspecView,
+    # EventWithButtonsView,
+    EventWithOffspecView,
 )
 from .slash_commands import SlashCommands
 
@@ -42,7 +42,7 @@ class RaidTools(SlashCommands, commands.Cog):
         log.debug("Adding EventView")
         self.bot.add_view(EventView(self.config))
         log.debug("Adding EventWithButtonsView")
-        self.bot.add_view(EventWithButtonsView(self.config))
+        # self.bot.add_view(EventWithButtonsView(self.config))
         log.debug("Adding EventWithOffspecView")
         self.bot.add_view(EventWithOffspecView(self.config))
         log.debug("Adding EventWithMultiOffspecView")

@@ -495,13 +495,13 @@ class EventView(discord.ui.View):
             user_class: str = user_events[event_id]["participating_class"]
             current_events[event_id]["signed_up"][user_class].remove(interaction.user.id)
         except (ValueError, KeyError):
-            await interaction.followup.send("Nisi prijavljen.")
+            await interaction.followup.send("Nisi prijavljen.", ephemeral=True)
             return
 
         try:
             user_events.pop(event_id)
         except Exception:
-            await interaction.followup.send("Greška. O ne")
+            await interaction.followup.send("Greška. O ne", ephemeral=True)
             return
 
         await self.update_event(current_events, event_id, interaction, user_events)

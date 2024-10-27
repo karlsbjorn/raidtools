@@ -682,6 +682,33 @@ class EventWithButtonsView(discord.ui.View):
             await self.update_event(current_events, event_id, interaction, user_events)
         return
 
+    @discord.ui.button(
+        label="Odjavi se",
+        style=discord.ButtonStyle.red,
+        row=2,
+        custom_id="raidtools:eventbutton:removesignup",
+    )
+    async def remove_signup(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True)
+        current_events = await self.config.guild(interaction.guild).events()
+        event_id = str(interaction.message.id)  # type: ignore
+        user_events: Dict = await self.config.member(interaction.user).events()
+
+        try:
+            user_class: str = user_events[event_id]["participating_class"]
+            current_events[event_id]["signed_up"][user_class].remove(interaction.user.id)
+        except (ValueError, KeyError):
+            await interaction.followup.send("Nisi prijavljen.", ephemeral=True)
+            return
+
+        try:
+            user_events.pop(event_id)
+        except Exception:
+            await interaction.followup.send("Greška. O ne", ephemeral=True)
+            return
+
+        await self.update_event(current_events, event_id, interaction, user_events)
+
     async def update_event(self, current_events, event_id, interaction, user_events):
         await self.config.guild(interaction.guild).events.set(current_events)
         await self.config.member(interaction.user).events.set(user_events)
@@ -919,6 +946,33 @@ class EventWithOffspecView(discord.ui.View):
             await self.update_event(current_events, event_id, interaction, user_events)
         return
 
+    @discord.ui.button(
+        label="Odjavi se",
+        style=discord.ButtonStyle.red,
+        row=2,
+        custom_id="raidtools:eventbutton:removesignup",
+    )
+    async def remove_signup(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True)
+        current_events = await self.config.guild(interaction.guild).events()
+        event_id = str(interaction.message.id)  # type: ignore
+        user_events: Dict = await self.config.member(interaction.user).events()
+
+        try:
+            user_class: str = user_events[event_id]["participating_class"]
+            current_events[event_id]["signed_up"][user_class].remove(interaction.user.id)
+        except (ValueError, KeyError):
+            await interaction.followup.send("Nisi prijavljen.", ephemeral=True)
+            return
+
+        try:
+            user_events.pop(event_id)
+        except Exception:
+            await interaction.followup.send("Greška. O ne", ephemeral=True)
+            return
+
+        await self.update_event(current_events, event_id, interaction, user_events)
+
     async def update_event(self, current_events, event_id, interaction, user_events):
         log.debug(f"Updating event {event_id} for {interaction.user.name}")
         await self.config.guild(interaction.guild).events.set(current_events)
@@ -1105,6 +1159,33 @@ class EventWithMultiOffspecView(EventWithOffspecView):
             user_events[event_id]["offspec_role"] = "offspec_rdps"
             await self.update_event(current_events, event_id, interaction, user_events)
         return
+
+    @discord.ui.button(
+        label="Odjavi se",
+        style=discord.ButtonStyle.red,
+        row=2,
+        custom_id="raidtools:eventbutton:removesignup",
+    )
+    async def remove_signup(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True)
+        current_events = await self.config.guild(interaction.guild).events()
+        event_id = str(interaction.message.id)  # type: ignore
+        user_events: Dict = await self.config.member(interaction.user).events()
+
+        try:
+            user_class: str = user_events[event_id]["participating_class"]
+            current_events[event_id]["signed_up"][user_class].remove(interaction.user.id)
+        except (ValueError, KeyError):
+            await interaction.followup.send("Nisi prijavljen.", ephemeral=True)
+            return
+
+        try:
+            user_events.pop(event_id)
+        except Exception:
+            await interaction.followup.send("Greška. O ne", ephemeral=True)
+            return
+
+        await self.update_event(current_events, event_id, interaction, user_events)
 
 
 class EventClassDropdown(discord.ui.Select):

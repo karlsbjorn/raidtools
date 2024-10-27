@@ -298,6 +298,8 @@ class EventEmbed:
                     continue
 
                 signee_event_info = await config.member(user_obj).events()
+                if not signee_event_info.get(event_id):
+                    continue
                 if signee_event_info[event_id]["participating_role"] == "tank":
                     tank_n += 1
                 elif signee_event_info[event_id]["participating_role"] == "healer":

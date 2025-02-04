@@ -168,6 +168,11 @@ class EventPreviewView(discord.ui.View):
         )
 
         thread = await self.create_event_thread(msg)
+        if thread:
+            # Buttons can't be used on the message the thread got started from when
+            # the client is in the thread, so we link to the original message instead
+            msg = await thread.send(f"[Klikni ovdje kako bi se prijavio]({msg.jump_url})")
+            await msg.pin()
 
         # Send a Discord scheduled event
         try:

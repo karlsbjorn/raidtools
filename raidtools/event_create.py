@@ -521,13 +521,13 @@ class EventView(discord.ui.View):
             bot=interaction.client,
             config=self.config,
         )
-        event_msg = await interaction.channel.fetch_message(int(event_id))
-        await event_msg.edit(embed=embed)
         try:
             await interaction.followup.send("Uspješno si se odjavio.", ephemeral=True)
         except discord.NotFound:
             # Can't respond to interaction because user deleted the ephemeral message it was invoked from.
             pass
+        event_msg = await interaction.channel.fetch_message(int(event_id))
+        await event_msg.edit(embed=embed)
 
 
 # Deprecated because unused

@@ -1325,12 +1325,12 @@ class EventSpecDropdown(discord.ui.Select):
         else:
             user_events[self.event_id]["participating_role"] = "dps"
 
-        await self.update_event(current_events, self.event_id, interaction, user_events)
         await self.add_participant_to_thread(
             current_events[self.event_id].get("event_thread"),
             interaction.user,
             interaction.guild,
         )
+        await self.update_event(current_events, self.event_id, interaction, user_events)
 
     async def update_event(self, current_events, event_id, interaction, user_events):
         log.debug(f"Updating event {event_id} for {interaction.user.name}")
@@ -1342,13 +1342,13 @@ class EventSpecDropdown(discord.ui.Select):
             bot=interaction.client,
             config=self.config,
         )
-        event_msg = await interaction.channel.fetch_message(int(event_id))
-        await event_msg.edit(embed=embed)
         try:
             await interaction.followup.send("Uspješno si se prijavio.", ephemeral=True)
         except discord.NotFound:
             # Can't respond to interaction because user deleted the ephemeral message it was invoked from.
             pass
+        event_msg = await interaction.channel.fetch_message(int(event_id))
+        await event_msg.edit(embed=embed)
 
     async def add_participant_to_thread(
         self, thread_id: int, user: discord.User | discord.Member, guild: discord.Guild

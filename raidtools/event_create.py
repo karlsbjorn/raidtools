@@ -2,7 +2,6 @@ import logging
 from typing import Dict, Optional
 
 import discord.ui
-from redbot.core.bot import Red
 
 from raidtools.discordevent import RaidtoolsDiscordEvent
 from raidtools.emojis import button_emojis, class_emojis, role_emojis, spec_emojis
@@ -59,11 +58,18 @@ class EventCreateModal(discord.ui.Modal):
             min_length=1,
             max_length=20,
         )
+        self.channel_select = discord.ui.ChannelSelect(
+            channel_types=[discord.ChannelType.text],
+            min_values=1,
+            max_values=1,
+        )
+        self.channel_select.required = True
 
         self.add_item(self.event_name)
         self.add_item(self.event_description)
         self.add_item(self.event_date)
         self.add_item(self.event_end_date)
+        self.add_item(self.channel_select)
 
     async def on_submit(self, interaction: discord.Interaction, /) -> None:
         if not self.event_name:
@@ -91,6 +97,7 @@ class EventCreateModal(discord.ui.Modal):
             "event_end_date": str(self.event_end_date),
             "event_guild": interaction.guild.id,
             "event_id": interaction.message.id,
+            "posted_channel_id": self.channel_select.values[0].id
         }
         embed = await EventEmbed.create_event_embed(
             signed_up=mock_signed_up,
@@ -103,8 +110,8 @@ class EventCreateModal(discord.ui.Modal):
         view = None
         if self.extra_buttons == "no_buttons":
             view = EventPreviewView(extras=extras, config=self.config)
-        elif self.extra_buttons == "buttons":
-            view = EventPreviewWithButtonsView(extras=extras, config=self.config)
+        # elif self.extra_buttons == "buttons":
+        #     view = EventPreviewWithButtonsView(extras=extras, config=self.config)
         elif self.extra_buttons == "offspec_buttons":
             view = EventPreviewWithOffspecButtonsView(extras=extras, config=self.config)
         elif self.extra_buttons == "offspec_buttons_multi":
@@ -160,7 +167,7 @@ class EventPreviewView(discord.ui.View):
             config=self.config,
         )
 
-        channel_id = interaction.channel_id
+        channel_id = self.extras["posted_channel_id"]
 
         # Send event message
         msg = await interaction.client.get_channel(channel_id).send(
@@ -186,7 +193,7 @@ class EventPreviewView(discord.ui.View):
         current_events: Dict = await self.config.guild(msg.guild).events()
         current_events[msg.id] = {
             "event_id": msg.id,
-            "event_channel": msg.channel.id,
+            "event_channel": channel_id,
             "event_guild": msg.guild.id,
             "event_name": self.extras["event_name"],
             "event_description": self.extras["event_description"],
@@ -426,7 +433,7 @@ class EventPreviewWithOffspecButtonsView(discord.ui.View):
             config=self.config,
         )
 
-        channel_id = interaction.channel_id
+        channel_id = self.extras["posted_channel_id"]
 
         # Send event message
         msg = await interaction.client.get_channel(channel_id).send(
@@ -452,7 +459,7 @@ class EventPreviewWithOffspecButtonsView(discord.ui.View):
         current_events: Dict = await self.config.guild(msg.guild).events()
         current_events[msg.id] = {
             "event_id": msg.id,
-            "event_channel": msg.channel.id,
+            "event_channel": channel_id,
             "event_guild": msg.guild.id,
             "event_name": self.extras["event_name"],
             "event_description": self.extras["event_description"],

@@ -47,6 +47,7 @@ spec_emojis = {  # TODO: this has to be gotten from config before cog is public
     "monk_windwalker": "<:windwalker:1029810690833260605>",
     "demon_hunter_havoc": "<:havoc:1029810708168319018>",
     "demon_hunter_vengeance": "<:vengeance:1029810706989711440>",
+    "demon_hunter_devourer": "<:devourer:1466390581474365521>",
     "death_knight_blood": "<:blood:1029810712152899614>",
     "death_knight_frost": "<:frost_dk:1029810710601019453>",
     "death_knight_unholy": "<:unholy:1029810709124612209>",

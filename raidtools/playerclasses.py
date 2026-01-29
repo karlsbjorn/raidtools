@@ -25,7 +25,7 @@ player_specs = {
     "warlock": {"affliction", "demonology", "destruction"},
     "shaman": {"elemental", "enhancement", "restoration"},
     "monk": {"brewmaster", "mistweaver", "windwalker"},
-    "demon_hunter": {"havoc", "vengeance"},
+    "demon_hunter": {"havoc", "vengeance", "devourer"},
     "death_knight": {"blood", "frost", "unholy"},
     "evoker": {"preservation", "devastation", "augmentation"},
 }
